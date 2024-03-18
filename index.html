@@ -5,120 +5,110 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>Document</title>
 	<link rel="stylesheet" href="main.css">
+	<!-- google fonts -->
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link href="https://fonts.googleapis.com/css2?family=Rubik:ital,wght@0,300..900;1,300..900&display=swap" rel="stylesheet">
 	<!-- google icons -->
-	<!-- <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" /> -->
+	<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
 </head>
 <body>
 
-	<section class="top-section">		
-		<div class="screens-container">
-			<div class="screen screen1 corner-topleft"></div>
-			<div class="screen screen2"></div>
-			<div class="screen screen3"></div>
-			<div class="screen screen4"></div>
-			<div class="screen screen5"></div>
-			<div class="screen screen6 corner-topright"></div>
-			<div class="screen screen7"></div>
-			<div class="screen screen8"></div>
-			<div class="screen screen9"></div>
-			<div class="screen screen10"></div>
-			<div class="screen screen11"></div>
-			<div class="screen screen12"></div>
-			<div class="screen screen13"></div>
-			<div class="screen screen14"></div>
-			<div class="screen screen15"></div>
-			<div class="screen screen16"></div>
-			<div class="screen screen17"></div>
-			<div class="screen screen18"></div>
-			<div class="screen screen19"></div>
-			<div class="screen screen20"></div>
-			<div class="screen screen21"></div>
-			<div class="screen screen22"></div>
-			<div class="screen screen23"></div>
-			<div class="screen screen24"></div>
-			<div class="screen screen25"></div>
-			<div class="screen screen26"></div>
-			<div class="screen screen27"></div>
-			<div class="screen screen28"></div>
-			<div class="screen screen29"></div>
-			<div class="screen screen30"></div>
-			<div class="screen screen31"></div>
-			<div class="screen screen32"></div>
-			<div class="screen screen33"></div>
-			<div class="screen screen34"></div>
-			<div class="screen screen35"></div>
-			<div class="screen screen36"></div>
-			<div class="screen screen37"></div>
-			<div class="screen screen38"></div>
-			<div class="screen screen39"></div>
-			<div class="screen screen40"></div>
-			<div class="screen screen41"></div>
-			<div class="screen screen42"></div>
-			<div class="screen screen43"></div>
-			<div class="screen screen44"></div>
-			<div class="screen screen45"></div>
-			<div class="screen screen46"></div>
-			<div class="screen screen47"></div>
-			<div class="screen screen48"></div>
-			<div class="screen screen49"></div>
-			<div class="screen screen50"></div>
-			<div class="screen screen51"></div>
-			<div class="screen screen52"></div>
-			<div class="screen screen53"></div>
-			<div class="screen screen54"></div>
-			<div class="screen screen55 corner-bottomleft"></div>
-			<div class="screen screen56"></div>
-			<div class="screen screen57"></div>
-			<div class="screen screen58"></div>
-			<div class="screen screen59"></div>
-			<div class="screen screen60 corner-bottomright"></div>
+	<section class="landing">
+		<div class="styles">
+			<div class="h-line">
+				<span class="current-style">y2k</span>
+				<button class="next-style">
+					<span class="center-text material-symbols-outlined next">
+					arrow_forward_ios
+					</span>
+				</button>
+			</div>
 		</div>
-		<div class="current-counter">
-			<div class="small-counters">
-				<div class="days-counter">
-					<h3 class="title">days</h3>
-					<span class="days">02</span>
-				</div>
-				<div class="days-counter">
-					<h3 class="title">hours</h3>
-					<span class="days">02</span>
-				</div>
-				<div class="days-counter">
-					<h3 class="title">minutes</h3>
-					<span class="days">02</span>
-				</div>
-				<div class="days-counter">
-					<h3 class="title">seconds</h3>
-					<span class="days">02</span>
-				</div>
-			</div>
-			<div class="others">
-				<div class="buttons">
-					<button class="edite">E</button>
-					<button class="delete">D</button>
-				</div>
-				<span class="counter-number">2</span>
-			</div>
-
+		<!-- change it to "you're running out of time" -->
+		<!-- <h1 class="landing-header">welcome</h1> -->
+		<!-- <div class="screens-wrapper"> -->
+		<div id='screens-container' class="screens-container">
+			<span class="screen screen1" id="screen1"></span>
+			<span class="screen screen2" id="screen2"></span>
+			<span class="screen screen3" id="screen3"></span>
+			<span class="screen screen4" id="screen4"></span>
+			<span class="screen screen5" id="screen5"></span>
+			<span class="screen screen6" id="screen6"></span>
+			<span class="screen screen7" id="screen7"></span>
+			<span class="screen screen8" id="screen8"></span>
+			<span class="screen screen9" id="screen9"></span>
+			<span class="screen screen10" id="screen10"></span>
+			<span class="screen screen11" id="screen11"></span>
+			<span class="screen screen12" id="screen12"></span>
+			<span class="screen screen13" id="screen13"></span>
+			<span class="screen screen14" id="screen14"></span>
+			<span class="screen screen15" id="screen15"></span>
+			<span class="screen screen16" id="screen16"></span>
+			<span class="screen screen17" id="screen17"></span>
+			<span class="screen screen18" id="screen18"></span>
+			<span class="screen screen19" id="screen19"></span>
+			<span class="screen screen20" id="screen20"></span>
+			<span class="screen screen21" id="screen21"></span>
+			<span class="screen screen22" id="screen22"></span>
+			<span class="screen screen23" id="screen23"></span>
+			<span class="screen screen24" id="screen24"></span>
+			<span class="screen screen25" id="screen25"></span>
+			<span class="screen screen26" id="screen26"></span>
+			<span class="screen screen27" id="screen27"></span>
+			<span class="screen screen28" id="screen28"></span>
+			<span class="screen screen29" id="screen29"></span>
+			<span class="screen screen30" id="screen30"></span>
+			<span class="screen screen31" id="screen31"></span>
+			<span class="screen screen32" id="screen32"></span>
+			<span class="screen screen33" id="screen33"></span>
+			<span class="screen screen34" id="screen34"></span>
+			<span class="screen screen35" id="screen35"></span>
+			<span class="screen screen36" id="screen36"></span>
+			<span class="screen screen37" id="screen37"></span>
+			<span class="screen screen38" id="screen38"></span>
+			<span class="screen screen39" id="screen39"></span>
+			<span class="screen screen40" id="screen40"></span>
+			<span class="screen screen41" id="screen41"></span>
+			<span class="screen screen42" id="screen42"></span>
+			<span class="screen screen43" id="screen43"></span>
+			<span class="screen screen44" id="screen44"></span>
+			<span class="screen screen45" id="screen45"></span>
+			<span class="screen screen46" id="screen46"></span>
+			<span class="screen screen47" id="screen47"></span>
+			<span class="screen screen48" id="screen48"></span>
+			<span class="screen screen49" id="screen49"></span>
+			<span class="screen screen50" id="screen50"></span>
+			<span class="screen screen51" id="screen51"></span>
+			<span class="screen screen52" id="screen52"></span>
+			<span class="screen screen53" id="screen53"></span>
+			<span class="screen screen54" id="screen54"></span>
+			<span class="screen screen55" id="screen55"></span>
+			<span class="screen screen56" id="screen56"></span>
+			<span class="screen screen57" id="screen57"></span>
+			<span class="screen screen58" id="screen58"></span>
+			<span class="screen screen59" id="screen59"></span>
+			<span class="screen screen60" id="screen60"></span>
+			<span class="screen screen61" id="screen61"></span>
+			<span class="screen screen62" id="screen62"></span>
+			<span class="screen screen63" id="screen63"></span>
+		</div>
+		<!-- </div> -->
+		<div class="text">
+			<h1 class='landing-header'>Welcome to our countdown timer service!</h1>
+			<p>Whether you're counting down to an important deadline, a special event, or just keeping track of time, our countdown timer is here to help.</p>
 		</div>
 	</section>
-
-	
-<!-- 	<div class="time-prompt">
-		<div id="inputs-container" class='inputs-container'>
-		  <input placeholder='Days' type="number" id="days" name="days">
-		  <input placeholder='Hours' type="number" id="hours" name="hours">
-		  <input placeholder='Minutes' type="number" id="minutes" name="minutes">
-		  <input placeholder='Seconds' type="number" id="seconds" name="seconds">
+	<section id='pull-up-menu' class="pull-up-menu">
+		<button id='pull-up-menu-btn' class='arrow'>
+			<span class="center-text-icon material-symbols-outlined">
+			arrow_downward
+			</span>
+		</button>
+		<div class="menu-items">
+			
 		</div>
-		<button id="confirm" class="confirm-duration">start</button>
-	</div> -->
-
-
-
-
-
-
+	</section>
 	<script src="main.js"></script>
 </body>
 </html>
