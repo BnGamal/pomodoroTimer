@@ -13,7 +13,6 @@
 	<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
 </head>
 <body>
-
 	<section class="landing">
 		<div class="styles">
 			<div class="h-line">
@@ -26,8 +25,6 @@
 			</div>
 		</div>
 		<!-- change it to "you're running out of time" -->
-		<!-- <h1 class="landing-header">welcome</h1> -->
-		<!-- <div class="screens-wrapper"> -->
 		<div id='screens-container' class="screens-container">
 			<span class="screen screen1" id="screen1"></span>
 			<span class="screen screen2" id="screen2"></span>
@@ -93,7 +90,6 @@
 			<span class="screen screen62" id="screen62"></span>
 			<span class="screen screen63" id="screen63"></span>
 		</div>
-		<!-- </div> -->
 		<div class="text">
 			<h1 class='landing-header'>Welcome to our countdown timer service!</h1>
 			<p>Whether you're counting down to an important deadline, a special event, or just keeping track of time, our countdown timer is here to help.</p>
@@ -105,8 +101,44 @@
 			arrow_downward
 			</span>
 		</button>
-		<div class="menu-items">
-			
+		<div class="menu-items-container">			
+			<div class="menu-items">
+				<div class="prompt">
+					<div class="inputs">
+						<div class="input-container days-input">
+							<h2 class="input-title">days</h2>
+							<input placeholder=0 id=days type="number">
+						</div>
+						<div class="input-container">
+							<h2 class="input-title">hr</h2>
+							<input placeholder=0 id=hours type="number" max=24>
+						</div>
+						<div class="input-container">
+							<h2 class="input-title">min</h2>
+							<input placeholder=0 id=minutes type="number" max=60>
+						</div>
+						<div class="input-container">
+							<h2 class="input-title">sec</h2>
+							<input placeholder=0 id=seconds type="number" max=60>
+						</div>					
+					</div>
+					<div class="buttons">
+						<button onclick="confirmPrompt()">
+							<span class="material-symbols-outlined">
+							done
+							</span>
+						</button>
+						<button onclick="rejectPrompt()">
+							<span class="material-symbols-outlined">
+							close
+							</span>
+						</button>
+					</div>
+				</div>
+				<button id="add-timer">
+					<span class="material-symbols-outlined">add</span>
+				</button>			
+			</div>
 		</div>
 	</section>
 	<script src="main.js"></script>

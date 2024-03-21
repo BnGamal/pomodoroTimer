@@ -12,8 +12,6 @@
   --light-orange: #FFE4C4; 
   --brown: brown;
   --rose: #FAEBD7;
-
-  --menu-top: 97%;
 }
 
 *,
@@ -23,7 +21,7 @@
 }
 
 html {
-
+    scroll-behavior: smooth;
     font-size: 16px;
 }
 
@@ -98,27 +96,16 @@ p {
 }
 
 /*start styling*/
-
 body {
 	font-family: "Rubik", sans-serif;
 	background: var(--rose);
-	/* for the pull up menu	*/
-/*	position: relative;*/
 	padding: 1em 1em 3em 1em;
-/*	overflow: hidden;*/
 }
 
+/*landing section*/
 section.landing {
-/*	min-height: 390px;*/
-/*	height: 87vh;*/
-/*	display: grid;*/
-/*	grid-template-rows: auto minmax(400px, 600px);*/
-/*	gap: 1em;*/
 }
 
-/*section.landing > * {
-	border-bottom: 1em;
-}*/
 .styles {}
 
 .styles .h-line {
@@ -160,10 +147,6 @@ section.landing {
     transform: translateX(2px);
 }
 
-/*the only solution for centering the container 
-without causing additional problems using aspect-ratio*/
-.screens-wrapper {}
-
 .screens-container {
 	margin: 3em auto 3em auto;
 	max-height: 410px;
@@ -186,19 +169,19 @@ without causing additional problems using aspect-ratio*/
     color: var(--brown);
     text-align: center;
     font-weight: 500;
-/*    margin-bottom: calc(100% - var(--menu-top));*/
 }
 
+/*menu section*/
 .pull-up-menu {
-	/*	the top values are not calculated */
     background: var(--orange);
     height: 75vh;
     min-height: 500px;
     position: fixed;
     left: 1em;
     right: 1em;
-    top: var(--menu-top);
-	padding: 1em;
+    bottom: 0;
+    transform: translatey(calc(100% - 20px));
+	padding: 1.6em 1em;
     border-radius: 20px 20px 0 0;
     transition: 0.7s ease-in-out;
 }
@@ -220,15 +203,105 @@ without causing additional problems using aspect-ratio*/
     font-weight: bold; 
 }
 
-.menu-items {
-	height: 100%;
-	overflow: auto;
+.menu-items-container {
+    scroll-behavior: smooth;
+    height: 100%;
+    overflow: auto;    
+    /* for the scroll bar not to stick with content*/
+    padding: 0 0.3em;
 }
 
-/*components*/
+.menu-items {
+    display: flex;
+    flex-direction: column;
+    gap: 1em;
+}
+
+.prompt {
+    display: none;
+    background: var(--rose);
+    border-radius: 10px;
+    overflow: hidden;
+    border: 1px solid var(--brown);
+}
+
+.prompt .inputs {
+    padding: 0.7em;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
+    gap: 0.7em;
+}
+
+.prompt .input-container.days-input {
+    grid-column: auto / span 3;
+}
+
+.prompt .input-container {
+    border: 1px solid var(--brown);
+    border-radius: 5px;
+    overflow: hidden;
+}
+
+.prompt .input-container h2 {
+    color: var(--brown);
+    background: var(--light-orange);
+    margin: 0;
+    padding: 0.2em;
+    border-bottom: 1px solid var(--brown);
+    border-radius: 0 0 5px 5px;
+}
+
+.prompt .input-container input {
+    color: var(--orange);
+    background: var(--rose);
+    width: 100%;
+    border: none;
+    font-size: 1.4rem;
+    text-align: center;
+    padding: 0.2em;
+}
+
+.prompt .buttons {
+    border-top: 1px solid var(--brown);
+    display: flex;
+}
+
+.prompt .buttons button {
+    padding: 0.5em;
+    text-align: center;
+    color: var(--orange);
+    background: var(--light-orange);
+    width: 100%;
+}
+
+.prompt .buttons button:last-child {
+    border-left: 1px solid var(--brown);
+}
+
+.prompt .buttons button span {
+    font-size: 2rem;
+    font-weight: bold;
+}
+
+#add-timer {
+    width: 100%;
+    background: var(--light-orange);
+    padding: 0.3em;
+    border: 1px solid var(--brown);
+    color: var(--orange);
+    border-radius: 5px;
+}
+
+#add-timer span {
+    font-size: 2rem;
+    font-weight: bold;
+}
+
+/*components added from JS*/
 
 .move-menu {
-	top: 25%;
+    transform: translateY(0);
 }
 
 .move-button {
@@ -240,7 +313,7 @@ without causing additional problems using aspect-ratio*/
 	transition: .5s ease-in-out;
 }
 
-.color {
+.screen-highlighted {
 	background: var(--orange);
 }
 
@@ -249,14 +322,51 @@ without causing additional problems using aspect-ratio*/
     margin: 1em 0 0.5em 0;
 }
 
-/*used everytime I need to center a 
-text or an icon using flexbox
 .center-text-icon {
 	display: flex;
 	justify-content: center;
 	align-items: center;
 }
 
-.screen-highlighted {
-	background: var(--orange);
+.timer {
+    background: var(--rose);
+    border-radius: 10px;
+    overflow: hidden;
+    border: 1px solid var(--brown);
+
+    padding: 0.7em;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
+    gap: 0.7em;
+}
+
+.time-block {
+    border: 1px solid var(--brown);
+    border-radius: 5px;
+    overflow: hidden;
+}
+
+.days-block {
+    grid-column: auto / span 3;
+}
+
+.timer-title {
+    color: var(--brown);
+    background: var(--light-orange);
+    margin: 0;
+    padding: 0.2em;
+    border-bottom: 1px solid var(--brown);
+    border-radius: 0 0 5px 5px;
+}
+
+.timer-digit {
+    display: block;
+    color: var(--orange);
+    background: var(--rose);
+    width: 100%;
+    border: none;
+    font-size: 1.4rem;
+    text-align: center;
+    padding: 0.2em;
 }
