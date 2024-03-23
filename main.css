@@ -174,7 +174,7 @@ section.landing {
 /*menu section*/
 .pull-up-menu {
     background: var(--orange);
-    height: 75vh;
+    height: 76vh;
     min-height: 500px;
     position: fixed;
     left: 1em;
@@ -216,6 +216,43 @@ section.landing {
     flex-direction: column;
     gap: 1em;
 }
+
+.timer {
+    position: relative;
+}
+
+.timer-buttons {
+    grid-column: auto / span 3;
+    display: flex;
+}
+
+.timer-buttons > button {
+    background: var(--light-orange);
+    padding: .5em;
+    width: 100%;
+    border-top: 2px solid var(--orange);
+    border-bottom: 2px solid var(--orange)
+}
+
+.timer-buttons > button:first-child {
+    border-left: 2px solid var(--orange);
+    border-radius: 0 0 0 10px;
+}
+
+.timer-buttons > button:last-child {
+    border-right: 2px solid var(--orange);
+    border-radius: 0 0 10px 0;
+}
+
+.timer-buttons > button:not(:last-child) {
+    border-right: 2px solid var(--orange);
+}
+
+.timer-buttons > button > span {
+    font-size: 2rem;
+    color: var(--orange);
+}
+
 
 .prompt {
     display: none;
@@ -330,7 +367,7 @@ section.landing {
 
 .timer {
     background: var(--rose);
-    border-radius: 10px;
+    border-radius: 15px;
     overflow: hidden;
     border: 1px solid var(--brown);
 
@@ -369,4 +406,12 @@ section.landing {
     font-size: 1.4rem;
     text-align: center;
     padding: 0.2em;
+}
+
+.chosen-timer {
+    border: 4px dashed var(--brown);
+}
+
+.half-opacity {
+    filter: opacity(0.5);
 }

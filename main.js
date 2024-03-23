@@ -100,10 +100,13 @@ const bluePrints = [
 	"7": [2,3,4]
 }];
 let data = [];
+let backUp = [];
 
 let IdCounter = -1;
+let updating = false;
 const digitsLength = [24, 60, 60];
 
+const landingPage = document.querySelector('.landing')
 const screensContainer = document.getElementById('screens-container');
 const pullUpMenu = document.getElementById('pull-up-menu');
 const pullUpMenuBtn = document.getElementById('pull-up-menu-btn');
@@ -117,6 +120,7 @@ const minutesInputEle = document.getElementById('minutes');
 const secondsInputEle = document.getElementById('seconds');
 
 pullUpMenuBtn.addEventListener('click', () => {
+	changeLandingOpacity();
 	pullUpMenu.classList.toggle('move-menu');
 	pullUpMenuBtn.classList.toggle('move-button');
 });
@@ -202,9 +206,12 @@ function clearPromptValues() {
 	}
 }
 
-function createBoilerplate(days, hours, minutes, seconds, id) {
+function createBoilerplate(days, hours, minutes, seconds, id, paused) {
     // Create timer element
     const timer = document.createElement('div');
+    if (id === 0) {
+    	timer.classList.add('chosen-timer');
+    }
     timer.classList.add('timer');
     timer.setAttribute('id', `timer${id}`);
 
@@ -217,7 +224,7 @@ function createBoilerplate(days, hours, minutes, seconds, id) {
     daysTitle.textContent = 'days';
 
     const daysDigit = document.createElement('span');
-    daysDigit.classList.add('timer-digit');
+    daysDigit.classList.add('timer-digit', 'days-digit');
     daysDigit.textContent = days;
 
     daysBlock.appendChild(daysTitle);
@@ -232,7 +239,7 @@ function createBoilerplate(days, hours, minutes, seconds, id) {
     hoursTitle.textContent = 'hr';
 
     const hoursDigit = document.createElement('span');
-    hoursDigit.classList.add('timer-digit');
+    hoursDigit.classList.add('timer-digit', 'hours-digit');
     hoursDigit.textContent = hours;
 
     hoursBlock.appendChild(hoursTitle);
@@ -247,7 +254,7 @@ function createBoilerplate(days, hours, minutes, seconds, id) {
     minutesTitle.textContent = 'min';
 
     const minutesDigit = document.createElement('span');
-    minutesDigit.classList.add('timer-digit');
+    minutesDigit.classList.add('timer-digit', 'minutes-digit');
     minutesDigit.textContent = minutes;
 
     minutesBlock.appendChild(minutesTitle);
@@ -262,17 +269,77 @@ function createBoilerplate(days, hours, minutes, seconds, id) {
     secondsTitle.textContent = 'sec';
 
     const secondsDigit = document.createElement('span');
-    secondsDigit.classList.add('timer-digit');
+    secondsDigit.classList.add('timer-digit', 'seconds-digit');
     secondsDigit.textContent = seconds;
 
     secondsBlock.appendChild(secondsTitle);
     secondsBlock.appendChild(secondsDigit);
+
+    //create buttons block
+    const buttons = document.createElement('div');
+    buttons.classList.add('timer-buttons');
+
+	// Create buttons
+	const restartButton = document.createElement('button');
+	const pauseContinueButton = document.createElement('button');
+	const editButton = document.createElement('button');
+	const deleteButton = document.createElement('button');
+
+	// set event attributes
+	restartButton.setAttribute('onclick', "restartTimer(this.closest('div.timer'))");
+	if (paused) {
+		pauseContinueButton.setAttribute('onclick', "continueTimer(this.closest('div.timer'))");
+	} else {
+		pauseContinueButton.setAttribute('onclick', "pauseTimer(this.closest('div.timer'))");
+	}
+	editButton.setAttribute('onclick', "update(this.closest('div.timer'))")
+	// deleteButton.setAttribute('onclick', )
+
+	restartButton.id = 'restart-button';
+	pauseContinueButton.id = 'pause-continue-button';
+	editButton.id = 'edit-button';
+	deleteButton.id = 'delete-button';
+
+	// Create spans for icon text
+	const restartIcon = document.createElement('span');
+	restartIcon.classList.add('material-symbols-outlined');
+	restartIcon.textContent = 'restart_alt';
+
+	const pauseContinueIcon = document.createElement('span');
+	pauseContinueIcon.classList.add('material-symbols-outlined');
+
+	if (paused) {
+		pauseContinueIcon.textContent = 'play_arrow';
+	} else {
+		pauseContinueIcon.textContent = 'pause';
+	}
+
+	const editIcon = document.createElement('span');
+	editIcon.classList.add('material-symbols-outlined');
+	editIcon.textContent = 'edit';
+
+	const deleteIcon = document.createElement('span');
+	deleteIcon.classList.add('material-symbols-outlined');
+	deleteIcon.textContent = 'delete';
+
+	// Append icons to buttons
+	restartButton.appendChild(restartIcon);
+	pauseContinueButton.appendChild(pauseContinueIcon);
+	editButton.appendChild(editIcon);
+	deleteButton.appendChild(deleteIcon);
+
+
+    buttons.appendChild(restartButton);
+    buttons.appendChild(pauseContinueButton);
+    buttons.appendChild(editButton);
+    buttons.appendChild(deleteButton);
 
     // Append blocks to timer
     timer.appendChild(daysBlock);
     timer.appendChild(hoursBlock);
     timer.appendChild(minutesBlock);
     timer.appendChild(secondsBlock);
+    timer.appendChild(buttons);
 
     return timer;
 }
@@ -285,15 +352,22 @@ function addTimerToData(id, days, hours, minutes, seconds) {
 	data[id] = {};
 	data[id].counters = [days, hours, minutes, seconds];
 	data[id].finished = false;
+	data[id].paused = false;
+}
+
+function addTimerToBackUp(id, days, hours, minutes, seconds) {
+	backUp[id] = {};
+	backUp[id].counters = [days, hours, minutes, seconds];
 }
 
 function confirmPrompt() {
 	IdCounter ++;
 	const [days, hours, minutes, seconds] = storeInputsValues();
 	clearPromptValues();
-	const element = createBoilerplate(days, hours, minutes, seconds, IdCounter);
+	const element = createBoilerplate(days, hours, minutes, seconds, IdCounter, false);
 	appendBoilerPlate(element);
 	addTimerToData(IdCounter, days, hours, minutes, seconds);
+	addTimerToBackUp(IdCounter, days, hours, minutes, seconds);
 	hidePrompt();
 	scrollTimers();
 }
@@ -306,7 +380,7 @@ function rejectPrompt() {
 function updateTimers() {
 	for (let i = 0; i < data.length; i++) {
 		const timer = data[i];
-		if (!timer.finished) {
+		if (!timer.finished && !timer.paused) {
 			const seconds = timer.counters[digitsLength.length];
 			if (seconds === 0) {
 				borrowTime(timer, digitsLength.length);
@@ -335,7 +409,6 @@ function borrowTime(timer, currentDigitIndex) {
 
 function timerFinished(timer) {
 	timer.finished = true;
-	console.log(timer);
 }
 
 function redisplayTimers() {
@@ -347,7 +420,6 @@ function deleteTimers() {
 	Array.from(menuItems.children).forEach(child => {
 	    if (child.id.match(/^timer\d+$/)) {
 	        menuItems.removeChild(child);
-	    	// console.log(child);
 	    }
 	});
 }
@@ -358,9 +430,55 @@ function displayTimers() {
 		const hours = data[i].counters[1];
 		const minutes = data[i].counters[2];
 		const seconds = data[i].counters[3];
-		const element = createBoilerplate(days, hours, minutes, seconds, i);
+		const paused = data[i].paused;
+		const element = createBoilerplate(days, hours, minutes, seconds, i, paused);
 		appendBoilerPlate(element);
 	}
+}
+
+function changeLandingOpacity() {
+	landingPage.classList.toggle('half-opacity')
+}
+
+// the four buttons in each timer
+function restartTimer(timer) {
+	const timerIndex = getTimerIndex(timer);
+	pauseTimer(timer);
+	const [days, hours, minutes, seconds] = backUp[timerIndex].counters;
+	editTimer(timer, days, hours, minutes, seconds);
+	updateTimersData(timerIndex, days, hours, minutes, seconds);
+}
+
+function updateTimersData(timerIndex, days, hours, minutes, seconds) {
+	data[timerIndex].counters[0] = days;
+	data[timerIndex].counters[1] = hours;
+	data[timerIndex].counters[2] = minutes;
+	data[timerIndex].counters[3] = seconds;
+}
+
+function editTimer(timer, days, hours, minutes, seconds) {
+	timer.querySelector('.days-digit').innerText = days;
+	timer.querySelector('.hours-digit').innerText = hours;
+	timer.querySelector('.minutes-digit').innerText = minutes;
+	timer.querySelector('.seconds-digit').innerText = seconds;
+}
+
+function pauseTimer(timer) {
+	const timerIndex = getTimerIndex(timer);
+	data[timerIndex].paused = true;
+	timer.querySelector('#pause-continue-button span').innerText = 'play_arrow';
+	timer.querySelector('#pause-continue-button').setAttribute('onclick', "continueTimer(this.closest('div.timer'))");
+}
+
+function continueTimer(timer) {
+	const timerIndex = getTimerIndex(timer);
+	data[timerIndex].paused = false;
+	timer.querySelector('#pause-continue-button span').innerText = 'pause';
+	timer.querySelector('#pause-continue-button').setAttribute('onclick', "pauseTimer(this.closest('div.timer'))");
+}
+
+function getTimerIndex(timer) {
+	return timer.id.match(/\d+/)[0];
 }
 
 // run when the script is loaded

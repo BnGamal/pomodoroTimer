@@ -14,4 +14,6 @@
 
 # improvements
 - choose a pattern to be greeted with everytime you login
-- 
+- drag and drop timers to rearrange
+- use date tables to choose the initial and finall date
+- make the website functional in arabic "https://rtlstyling.com/"
