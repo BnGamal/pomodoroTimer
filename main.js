@@ -1,13 +1,12 @@
 
-
-
-
+// landing related
 const userPattern = { // click
 	"2": [1,3,5],
 	"3": [2,3,4],
 	"4": [1,2,4,5],
 	"5": [2,3,4],
-	"6": [1,3,5],};
+	"6": [1,3,5]
+};
 const bluePrints = [
 { // 0
 	"1": [2,3,4],
@@ -98,47 +97,12 @@ const bluePrints = [
 	"5": [5],
 	"6": [1,5],
 	"7": [2,3,4]
-}];
-let data = [];
-let backUp = [];
-
-let IdCounter = -1;
-let updating = false;
-const digitsLength = [24, 60, 60];
+}
+];
 
 const landingPage = document.querySelector('.landing')
 const screensContainer = document.getElementById('screens-container');
-const pullUpMenu = document.getElementById('pull-up-menu');
-const pullUpMenuBtn = document.getElementById('pull-up-menu-btn');
-const menuItemsContainer = document.querySelector('.menu-items-container');
-const menuItems = document.querySelector('.menu-items')
-const prompt = document.querySelector('.prompt');
-const addTimerButton = document.querySelector('#add-timer');
-const daysInputEle = document.getElementById('days');
-const hoursInputEle = document.getElementById('hours');
-const minutesInputEle = document.getElementById('minutes');
-const secondsInputEle = document.getElementById('seconds');
 
-pullUpMenuBtn.addEventListener('click', () => {
-	changeLandingOpacity();
-	pullUpMenu.classList.toggle('move-menu');
-	pullUpMenuBtn.classList.toggle('move-button');
-});
-addTimerButton.addEventListener('click', () => {
-	showPrompt(this);
-	scrollTimers();
-})
-hoursInputEle.oninput = () => {
-    validateInput(this, digitsLength[0]);
-};
-minutesInputEle.oninput = () => {
-    validateInput(this, digitsLength[1]);
-};
-secondsInputEle.oninput = () => {
-    validateInput(this, digitsLength[2]);
-};
-
-// getScree + add flip/highlight
 function getScreen(obj) {
 	keys = Object.keys(obj);
 	for (const yCoordinate of keys) {
@@ -155,7 +119,6 @@ function getScreen(obj) {
 		}
 	}
 }
-
 function clearScreens() {
 	const allScreens = document.querySelectorAll('span');
 	for (screen of allScreens) {
@@ -163,55 +126,41 @@ function clearScreens() {
 		screen.classList.remove('flip', 'screen-highlighted');
 	}
 }
-
-function scrollTimers() {
-	menuItemsContainer.scrollTop = menuItems.scrollHeight;
+function changeLandingOpacity() {
+	landingPage.classList.toggle('half-opacity')
 }
 
-function showPrompt() {
-	addTimerButton.style.display = 'none';
-	prompt.style.display = 'block';
-}
+// pull up menu related
+let data = [];
+let backUp = []; // counters only
 
-function hidePrompt() {
-	addTimerButton.style.display = 'block';
-	prompt.style.display = 'none';
-}
+const digitsLength = [24, 60, 60];
 
-function validateInput(element, limit) {
-	value = element.value;
-    if (value > limit) {
-    	errorInputNotValid(element.id, limit);
-    	element.value = '';	
-    }
-}
+let timerId = -1;
+let updating = false;
+let currentPrompt = null;
+let currentEditedTimer = null;
 
-function errorInputNotValid(id, limit) {
-	alert(`The Max # of ${id} is ${limit}`)
-}
+const pullUpMenu = document.getElementById('pull-up-menu');
+const pullUpMenuBtn = document.getElementById('pull-up-menu-btn');
+const menuItemsContainer = document.querySelector('.menu-items-container');
+const menuItems = document.querySelector('.menu-items')
+const addTimerButton = document.querySelector('#add-timer');
 
-function storeInputsValues() {
-	const daysValue = isNaN(parseInt(daysInputEle.value)) ? 0 : parseInt(daysInputEle.value);
-	const hoursValue = isNaN(parseInt(hoursInputEle.value)) ? 0 : parseInt(hoursInputEle.value);
-	const minutesValue = isNaN(parseInt(minutesInputEle.value)) ? 0 : parseInt(minutesInputEle.value);
-	const secondsValue = isNaN(parseInt(secondsInputEle.value)) ? 0 : parseInt(secondsInputEle.value);
-
-	return [daysValue, hoursValue, minutesValue, secondsValue];
-}
-
-function clearPromptValues() {
-	const allInputs = prompt.querySelectorAll('input');
-	for (let i = 0; i < allInputs.length; i++) {
-		allInputs[i].value = '';
-	}
-}
-
-function createBoilerplate(days, hours, minutes, seconds, id, paused) {
+pullUpMenuBtn.addEventListener('click', () => {
+	changeLandingOpacity();
+	pullUpMenu.classList.toggle('move-menu');
+	pullUpMenuBtn.classList.toggle('move-button');
+});
+addTimerButton.addEventListener('click', () => {
+	const prompt = generatePrompt();
+	currentPrompt = prompt;
+	insertPrompt(prompt);
+})
+// Elements generators
+function generateTimer(id, days, hours, minutes, seconds, paused) {
     // Create timer element
     const timer = document.createElement('div');
-    if (id === 0) {
-    	timer.classList.add('chosen-timer');
-    }
     timer.classList.add('timer');
     timer.setAttribute('id', `timer${id}`);
 
@@ -292,8 +241,8 @@ function createBoilerplate(days, hours, minutes, seconds, id, paused) {
 	} else {
 		pauseContinueButton.setAttribute('onclick', "pauseTimer(this.closest('div.timer'))");
 	}
-	editButton.setAttribute('onclick', "update(this.closest('div.timer'))")
-	// deleteButton.setAttribute('onclick', )
+	editButton.setAttribute('onclick', "editTimer(this.closest('div.timer'))")
+	deleteButton.setAttribute('onclick', "deleteTimer(this.closest('div.timer'))");
 
 	restartButton.id = 'restart-button';
 	pauseContinueButton.id = 'pause-continue-button';
@@ -343,54 +292,293 @@ function createBoilerplate(days, hours, minutes, seconds, id, paused) {
 
     return timer;
 }
+function generatePrompt(days, hours, minutes, seconds) {
+	days = days === undefined ? '' : days;
+	hours = hours === undefined ? '' : hours;
+	minutes = minutes === undefined ? '' : minutes;
+	seconds = seconds === undefined ? '' : seconds;
 
-function appendBoilerPlate(element) {
-	menuItems.insertBefore(element, prompt);
+	// Create main container div with class "prompt" and append it to the document body
+	let promptDiv = document.createElement("div");
+	promptDiv.classList.add("prompt");
+
+	// Create inputs container div with class "inputs" and append it to the main container
+	let inputsDiv = document.createElement("div");
+	inputsDiv.classList.add("inputs");
+	promptDiv.appendChild(inputsDiv);
+
+	// Create days input container with class "input-container days-input" and append it to the inputs container
+	let daysInputContainer = document.createElement("div");
+	daysInputContainer.classList.add("input-container", "days-input");
+	inputsDiv.appendChild(daysInputContainer);
+
+	// Create days input title with class "input-title" and text content "days" and append it to the days input container
+	let daysInputTitle = document.createElement("h2");
+	daysInputTitle.classList.add("input-title");
+	daysInputTitle.textContent = "days";
+	daysInputContainer.appendChild(daysInputTitle);
+
+	// Create days input element with id "days", type "number", and append it to the days input container
+	let daysInput = document.createElement("input");
+	daysInput.setAttribute("placeholder", "0");
+	daysInput.setAttribute("id", "days");
+	daysInput.setAttribute("type", "number");
+	daysInput.value = days;
+	daysInputContainer.appendChild(daysInput);
+
+	// Create hr input container with class "input-container" and append it to the inputs container
+	let hrInputContainer = document.createElement("div");
+	hrInputContainer.classList.add("input-container");
+	inputsDiv.appendChild(hrInputContainer);
+
+	// Create hr input title with class "input-title" and text content "hr" and append it to the hr input container
+	let hrInputTitle = document.createElement("h2");
+	hrInputTitle.classList.add("input-title");
+	hrInputTitle.textContent = "hr";
+	hrInputContainer.appendChild(hrInputTitle);
+
+	// Create hr input element with id "hours", type "number", max value "24", and append it to the hr input container
+	let hrInput = document.createElement("input");
+	hrInput.setAttribute("placeholder", "0");
+	hrInput.setAttribute("id", "hours");
+	hrInput.setAttribute("type", "number");
+	hrInput.setAttribute("max", "24");
+	hrInput.setAttribute('oninput', 'validateInput(this, digitsLength[0])');
+	hrInput.value = hours;
+	hrInputContainer.appendChild(hrInput);
+
+	// Create min input container (similar process to days and hr inputs)
+	let minInputContainer = document.createElement("div");
+	minInputContainer.classList.add("input-container");
+	inputsDiv.appendChild(minInputContainer);
+
+	// Create min input title with class "input-title" and text content "min" and append it to the min input container
+	let minInputTitle = document.createElement("h2");
+	minInputTitle.classList.add("input-title");
+	minInputTitle.textContent = "min";
+	minInputContainer.appendChild(minInputTitle);
+
+	// Create sec input element with id "hours", type "number", max value "24", and append it to the sec input container
+	let minInput = document.createElement("input");
+	minInput.setAttribute("placeholder", "0");
+	minInput.setAttribute("id", "minutes");
+	minInput.setAttribute("type", "number");
+	minInput.setAttribute("max", "60");
+	minInput.setAttribute('oninput', 'validateInput(this, digitsLength[1])');
+	minInput.value = minutes;
+	minInputContainer.appendChild(minInput);
+	// Create sec input container (similar process to days, hr, and sec inputs)
+	let secInputContainer = document.createElement("div");
+	secInputContainer.classList.add("input-container");
+	inputsDiv.appendChild(secInputContainer);
+
+	// Create sec input title with class "input-title" and text content "sec" and append it to the sec input container
+	let secInputTitle = document.createElement("h2");
+	secInputTitle.classList.add("input-title");
+	secInputTitle.textContent = "sec";
+	secInputContainer.appendChild(secInputTitle);
+
+	// Create sec input element with id "hours", type "number", max value "24", and append it to the sec input container
+	let secInput = document.createElement("input");
+	secInput.setAttribute("placeholder", "0");
+	secInput.setAttribute("id", "seconds");
+	secInput.setAttribute("type", "number");
+	secInput.setAttribute("max", "60");
+	secInput.setAttribute('oninput', 'validateInput(this, digitsLength[2])');
+	secInput.value = seconds;
+	secInputContainer.appendChild(secInput);
+
+	// Create buttons container div with class "buttons" and append it to the main container
+	let buttonsDiv = document.createElement("div");
+	buttonsDiv.classList.add("buttons");
+	promptDiv.appendChild(buttonsDiv);
+
+	// Create "done" button with onclick attribute set to "confirmPrompt()" and append it to the buttons container
+	let doneButton = document.createElement("button");
+	doneButton.setAttribute("onclick", "confirmPrompt(this)");
+	buttonsDiv.appendChild(doneButton);
+
+	// Create "done" button span with class "material-symbols-outlined" and text content "done" and append it to the "done" button
+	let doneButtonSpan = document.createElement("span");
+	doneButtonSpan.classList.add("material-symbols-outlined");
+	doneButtonSpan.textContent = "done";
+	doneButton.appendChild(doneButtonSpan);
+
+	// Create "close" button (similar process to "done" button) and append it to the buttons container
+	let closeButton = document.createElement("button");
+	closeButton.setAttribute("onclick", "rejectPrompt(this)");
+	buttonsDiv.appendChild(closeButton);
+
+	// Create "close" button span (similar process to "done" button span) and append it to the "close" button
+	let closeButtonSpan = document.createElement("span");
+	closeButtonSpan.classList.add("material-symbols-outlined");
+	closeButtonSpan.textContent = "close";
+	closeButton.appendChild(closeButtonSpan);
+
+	return promptDiv;
 }
+// Timer
+function getTimerIndex(timer) {
+	return timer.id.match(/\d+/)[0];
+}
+function updateTimer(timer, days, hours, minutes, seconds) {
+	timer.querySelector('.days-digit').innerText = days;
+	timer.querySelector('.hours-digit').innerText = hours;
+	timer.querySelector('.minutes-digit').innerText = minutes;
+	timer.querySelector('.seconds-digit').innerText = seconds;
+}
+// Prompt
+function validateInput(inputEle, limit) {
+	value = inputEle.value;
+    if (value > limit) {
+    	errorInputNotValid(inputEle.id, limit);
+    	inputEle.value = '';	
+    }
+}
+function errorInputNotValid(id, limit) {
+	alert(`The Max # of ${id} is ${limit}`)
+}
+function getInputsValues(prompt) {
+	const daysInputEle = prompt.querySelector('#days');
+	const hoursInputEle = prompt.querySelector('#hours');
+	const minutesInputEle = prompt.querySelector('#minutes');
+	const secondsInputEle = prompt.querySelector('#seconds');
 
+	const daysValue = isNaN(parseInt(daysInputEle.value)) ? 0 : parseInt(daysInputEle.value);
+	const hoursValue = isNaN(parseInt(hoursInputEle.value)) ? 0 : parseInt(hoursInputEle.value);
+	const minutesValue = isNaN(parseInt(minutesInputEle.value)) ? 0 : parseInt(minutesInputEle.value);
+	const secondsValue = isNaN(parseInt(secondsInputEle.value)) ? 0 : parseInt(secondsInputEle.value);
+
+	return [daysValue, hoursValue, minutesValue, secondsValue];
+}
+function confirmPrompt(button) {
+	const prompt = button.closest('div.prompt');
+	const [days, hours, minutes, seconds] = getInputsValues(prompt);
+	let currentId = null;
+	if (updating) {
+		currentId = getTimerIndex(currentEditedTimer);
+		deleteElement(currentEditedTimer);
+	} else {
+		timerId++;
+		currentId = timerId;
+	}
+	const timer = generateTimer(currentId, days, hours, minutes, seconds, false); // paused
+	addTimerToData(currentId, days, hours, minutes, seconds);
+	addTimerToBackUp(currentId, days, hours, minutes, seconds);
+	insertTimer(timer, currentPrompt);
+	deleteElement(prompt);
+	updating = false;
+}
+function rejectPrompt(button) {
+	const prompt = button.closest('div.prompt');
+	if (updating) {
+		currentEditedTimer.style.display = 'grid'
+		const currentTimerIndex = getTimerIndex(currentEditedTimer);
+		data[currentTimerIndex].paused = false;
+	}
+	deleteElement(prompt);
+	updating = false;
+}
+// Data and BackUP
 function addTimerToData(id, days, hours, minutes, seconds) {
 	data[id] = {};
+	data[id].id = id;
 	data[id].counters = [days, hours, minutes, seconds];
 	data[id].finished = false;
 	data[id].paused = false;
 }
-
+function updateTimersData(timerIndex, days, hours, minutes, seconds) {
+	data[timerIndex].counters[0] = days;
+	data[timerIndex].counters[1] = hours;
+	data[timerIndex].counters[2] = minutes;
+	data[timerIndex].counters[3] = seconds;
+}
 function addTimerToBackUp(id, days, hours, minutes, seconds) {
 	backUp[id] = {};
 	backUp[id].counters = [days, hours, minutes, seconds];
 }
-
-function confirmPrompt() {
-	IdCounter ++;
-	const [days, hours, minutes, seconds] = storeInputsValues();
-	clearPromptValues();
-	const element = createBoilerplate(days, hours, minutes, seconds, IdCounter, false);
-	appendBoilerPlate(element);
-	addTimerToData(IdCounter, days, hours, minutes, seconds);
-	addTimerToBackUp(IdCounter, days, hours, minutes, seconds);
-	hidePrompt();
-	scrollTimers();
+// adding/removing to/from DOM
+function insertTimer(timer, prompt=null) {
+	if (updating) {
+		menuItems.insertBefore(timer, prompt);
+	} else {
+		menuItems.insertBefore(timer, addTimerButton);
+	}
 }
-
-function rejectPrompt() {
-	hidePrompt();
-	clearPromptValues();
+function insertPrompt(prompt, timer=null) {
+	if (updating) {
+		menuItems.insertBefore(prompt, timer)
+	} else {
+		menuItems.insertBefore(prompt, addTimerButton);
+	}
 }
-
+function deleteElement(element) {
+	menuItems.removeChild(element);
+}
+// Timer's Four Buttons
+function restartTimer(timer) {
+	const timerIndex = getTimerIndex(timer);
+	pauseTimer(timer);
+	const [days, hours, minutes, seconds] = backUp[timerIndex].counters;
+	updateTimersData(timerIndex, days, hours, minutes, seconds);
+	updateTimer(timer, days, hours, minutes, seconds);
+}
+function pauseTimer(timer) {
+	const timerIndex = getTimerIndex(timer);
+	data[timerIndex].paused = true;
+	timer.querySelector('#pause-continue-button span').innerText = 'play_arrow';
+	timer.querySelector('#pause-continue-button').setAttribute('onclick', "continueTimer(this.closest('div.timer'))");
+}
+function continueTimer(timer) {
+	const timerIndex = getTimerIndex(timer);
+	data[timerIndex].paused = false;
+	timer.querySelector('#pause-continue-button span').innerText = 'pause';
+	timer.querySelector('#pause-continue-button').setAttribute('onclick', "pauseTimer(this.closest('div.timer'))");
+}
+function editTimer(timer) {
+	updating = true;
+	currentEditedTimer = timer;
+	const timerIndex = getTimerIndex(timer);
+	data[timerIndex].paused = true;
+	const prompt = generatePrompt(data[timerIndex].counters[0], data[timerIndex].counters[1], data[timerIndex].counters[2], data[timerIndex].counters[3]);
+	currentPrompt = prompt;
+	insertPrompt(prompt, timer);
+	timer.style.display = 'none';
+}
+function deleteTimer(timer) {
+	deleteElement(timer);
+	const timerIndex = getTimerIndex(timer);
+	data.splice(timerIndex, 1);
+	backUp.splice(timerIndex, 1);
+	timerId--;
+	for (let i = timerIndex; i < data.length; i++) {
+		data[i].id -= 1;
+	}
+	const allTimers = document.querySelectorAll('div.timer');
+	for (let i = timerIndex; i < allTimers.length; i++) {
+		const timer = allTimers[i];
+		const timerId = getTimerIndex(timer);
+		allTimers[i].id = `timer${timerId - 1}`;
+	}
+}
+// Updating loop functions
 function updateTimers() {
 	for (let i = 0; i < data.length; i++) {
 		const timer = data[i];
+		const timerIndex = timer.id;
+		// const timerIndex = getTimerIndex(timer);
 		if (!timer.finished && !timer.paused) {
 			const seconds = timer.counters[digitsLength.length];
 			if (seconds === 0) {
 				borrowTime(timer, digitsLength.length);
+				redisplayAllCounters(timerIndex);
 			} else {
 				timer.counters[3]--;
+				redisplaySecondsCounter(timerIndex);
 			}
 		}
 	}
 }
-
 function borrowTime(timer, currentDigitIndex) {
 	const biggerDigitIndex = currentDigitIndex - 1;
 	if (biggerDigitIndex === 0 && timer.counters[0] === 0) {
@@ -406,86 +594,28 @@ function borrowTime(timer, currentDigitIndex) {
 	}
 
 }
-
+function redisplaySecondsCounter(timerId) {
+	const timer = menuItems.querySelector(`div#timer${timerId}`);
+	const secondsEle = timer.querySelector('span.seconds-digit');
+	secondsEle.innerText = data[timerId].counters[3];
+}
+function redisplayAllCounters(timerId) {
+	const timer = menuItems.querySelector(`div#timer${timerId}`);
+	const daysEle = timer.querySelector('span.days-digit');
+	const hoursEle = timer.querySelector('span.hours-digit');
+	const minutesEle = timer.querySelector('span.minutes-digit');
+	const secondsEle = timer.querySelector('span.seconds-digit');
+	daysEle.innerText = data[timerId].counters[0];
+	hoursEle.innerText = data[timerId].counters[1];
+	minutesEle.innerText = data[timerId].counters[2];
+	secondsEle.innerText = data[timerId].counters[3];
+}
 function timerFinished(timer) {
 	timer.finished = true;
 }
-
-function redisplayTimers() {
-	deleteTimers();
-	displayTimers();
-}
-
-function deleteTimers() {
-	Array.from(menuItems.children).forEach(child => {
-	    if (child.id.match(/^timer\d+$/)) {
-	        menuItems.removeChild(child);
-	    }
-	});
-}
-
-function displayTimers() {
-	for (let i = 0; i < data.length; i++) {
-		const days = data[i].counters[0];
-		const hours = data[i].counters[1];
-		const minutes = data[i].counters[2];
-		const seconds = data[i].counters[3];
-		const paused = data[i].paused;
-		const element = createBoilerplate(days, hours, minutes, seconds, i, paused);
-		appendBoilerPlate(element);
-	}
-}
-
-function changeLandingOpacity() {
-	landingPage.classList.toggle('half-opacity')
-}
-
-// the four buttons in each timer
-function restartTimer(timer) {
-	const timerIndex = getTimerIndex(timer);
-	pauseTimer(timer);
-	const [days, hours, minutes, seconds] = backUp[timerIndex].counters;
-	editTimer(timer, days, hours, minutes, seconds);
-	updateTimersData(timerIndex, days, hours, minutes, seconds);
-}
-
-function updateTimersData(timerIndex, days, hours, minutes, seconds) {
-	data[timerIndex].counters[0] = days;
-	data[timerIndex].counters[1] = hours;
-	data[timerIndex].counters[2] = minutes;
-	data[timerIndex].counters[3] = seconds;
-}
-
-function editTimer(timer, days, hours, minutes, seconds) {
-	timer.querySelector('.days-digit').innerText = days;
-	timer.querySelector('.hours-digit').innerText = hours;
-	timer.querySelector('.minutes-digit').innerText = minutes;
-	timer.querySelector('.seconds-digit').innerText = seconds;
-}
-
-function pauseTimer(timer) {
-	const timerIndex = getTimerIndex(timer);
-	data[timerIndex].paused = true;
-	timer.querySelector('#pause-continue-button span').innerText = 'play_arrow';
-	timer.querySelector('#pause-continue-button').setAttribute('onclick', "continueTimer(this.closest('div.timer'))");
-}
-
-function continueTimer(timer) {
-	const timerIndex = getTimerIndex(timer);
-	data[timerIndex].paused = false;
-	timer.querySelector('#pause-continue-button span').innerText = 'pause';
-	timer.querySelector('#pause-continue-button').setAttribute('onclick', "pauseTimer(this.closest('div.timer'))");
-}
-
-function getTimerIndex(timer) {
-	return timer.id.match(/\d+/)[0];
-}
-
-// run when the script is loaded
-getScreen(userPattern);
-
-// second by second change
+// Updating loop
 setInterval(function() {
 	updateTimers();
-	redisplayTimers();
 }, 1000);
+// Run First
+// getScreen(userPattern);

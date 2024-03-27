@@ -95,7 +95,7 @@
 			<p>Whether you're counting down to an important deadline, a special event, or just keeping track of time, our countdown timer is here to help.</p>
 		</div>
 	</section>
-	<section id='pull-up-menu' class="pull-up-menu">
+	<section id='pull-up-menu' class="pull-up-menu move-menu">
 		<button id='pull-up-menu-btn' class='arrow'>
 			<span class="center-text-icon material-symbols-outlined">
 			arrow_downward
@@ -147,38 +147,39 @@
   </div>
 </div> -->
 
-				<div class="prompt">
-					<div class="inputs">
-						<div class="input-container days-input">
-							<h2 class="input-title">days</h2>
-							<input placeholder=0 id=days type="number">
-						</div>
-						<div class="input-container">
-							<h2 class="input-title">hr</h2>
-							<input placeholder=0 id=hours type="number" max=24>
-						</div>
-						<div class="input-container">
-							<h2 class="input-title">min</h2>
-							<input placeholder=0 id=minutes type="number" max=60>
-						</div>
-						<div class="input-container">
-							<h2 class="input-title">sec</h2>
-							<input placeholder=0 id=seconds type="number" max=60>
-						</div>					
-					</div>
-					<div class="buttons">
-						<button onclick="confirmPrompt()">
-							<span class="material-symbols-outlined">
-							done
-							</span>
-						</button>
-						<button onclick="rejectPrompt()">
-							<span class="material-symbols-outlined">
-							close
-							</span>
-						</button>
-					</div>
-				</div>
+
+<!-- <div class="prompt">
+	<div class="inputs">
+		<div class="input-container days-input">
+			<h2 class="input-title">days</h2>
+			<input placeholder=0 id=days type="number">
+		</div>
+		<div class="input-container">
+			<h2 class="input-title">hr</h2>
+			<input placeholder=0 id=hours type="number" max=24>
+		</div>
+		<div class="input-container">
+			<h2 class="input-title">min</h2>
+			<input placeholder=0 id=minutes type="number" max=60>
+		</div>
+		<div class="input-container">
+			<h2 class="input-title">sec</h2>
+			<input placeholder=0 id=seconds type="number" max=60>
+		</div>					
+	</div>
+	<div class="buttons">
+		<button onclick="confirmPrompt()">
+			<span class="material-symbols-outlined">
+			done
+			</span>
+		</button>
+		<button onclick="rejectPrompt()">
+			<span class="material-symbols-outlined">
+			close
+			</span>
+		</button>
+	</div>
+</div> -->
 				<button id="add-timer">
 					<span class="material-symbols-outlined">add</span>
 				</button>			

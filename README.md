@@ -11,6 +11,7 @@
 - change 'welcome' in landing to 'you're running out of time'
 - make a button that changes the order of the timers created (from latest => oldest or from oldest => latest)
 - add the (.) dot after (min, sec, hr) and make the text capitalized (only first letter)
+- making a new timer while editing another causes order problem
 
 # improvements
 - choose a pattern to be greeted with everytime you login

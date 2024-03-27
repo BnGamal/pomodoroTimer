@@ -255,7 +255,6 @@ section.landing {
 
 
 .prompt {
-    display: none;
     background: var(--rose);
     border-radius: 10px;
     overflow: hidden;
