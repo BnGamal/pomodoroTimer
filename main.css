@@ -1,17 +1,10 @@
 
 /* rules  */
 :root {
-/*  --bg-clr: antiquewhite;
-  --border-clr: brown;
-  --box-shadow-clr: brown;
-  --cell-bg-clr: bisque;
-  --cell-clr: coral;
-  --highlighted-cell-bg-clr: coral;*/
-
-  --orange: coral;
-  --light-orange: #FFE4C4; 
-  --brown: brown;
-  --rose: #FAEBD7;
+    --orange: coral;
+    --light-orange: #FFE4C4; 
+    --brown: brown;
+    --rose: #FAEBD7;
 }
 
 *,
@@ -99,7 +92,7 @@ p {
 body {
 	font-family: "Rubik", sans-serif;
 	background: var(--rose);
-	padding: 1em 1em 3em 1em;
+	padding: 1em 1em 4em 1em;
 }
 
 /*landing section*/
@@ -162,6 +155,23 @@ section.landing {
 	background: var(--light-orange);
 	box-shadow: 0 4px var(--brown);
 	border: 1px solid var(--brown);
+}
+
+.landing-reminder {
+    display: none;
+    margin: 2em 0 0 0;
+    color: var(--orange);
+}
+
+.total-seconds-container {
+    display: none;
+    margin: 2em 0 3em 0;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.5em;
+}
+
+.total-seconds-container > * {
+    margin: 0;
 }
 
 .landing .text p {
@@ -252,7 +262,6 @@ section.landing {
     font-size: 2rem;
     color: var(--orange);
 }
-
 
 .prompt {
     background: var(--rose);
@@ -377,6 +386,11 @@ section.landing {
     gap: 0.7em;
 }
 
+.timer > * {
+    cursor: pointer;
+} 
+
+
 .time-block {
     border: 1px solid var(--brown);
     border-radius: 5px;
@@ -405,6 +419,16 @@ section.landing {
     font-size: 1.4rem;
     text-align: center;
     padding: 0.2em;
+}
+
+/* landing timer */
+.landing-timer {
+    display: none;
+    grid-template-columns: 1fr 1fr;
+}
+
+.landing-timer .days-block {
+    grid-column: auto / span 2;
 }
 
 .chosen-timer {
