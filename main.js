@@ -9,7 +9,7 @@ const userPattern = { // click
 	"5": [2,3,4],
 	"6": [1,3,5]
 };
-const bluePrints = [
+const digitsBluePrints = [
 { // 0
 	"1": [2,3,4],
 	"2": [1,5],
@@ -103,7 +103,7 @@ const bluePrints = [
 ];
 
 let firstChange = true;
-let currentChosenTimer = null;
+let currentLandingTimer = null;
 
 const landingPage = document.querySelector('.landing')
 const screensContainer = document.getElementById('screens-container');
@@ -114,11 +114,10 @@ const onesSecondsContainer = document.querySelector('#ones-seconds');
 const landingTimer = document.getElementById('landing-timer');
 const landingText = document.querySelector('.text');
 
-
-function getScreen(obj, screensContainer) {
-	keys = Object.keys(obj);
+function getScreen(pattern, screensContainer) {
+	keys = Object.keys(pattern);
 	for (const yCoordinate of keys) {
-		xCoordinates = obj[yCoordinate];
+		xCoordinates = pattern[yCoordinate];
 		for (const xCoordinate  of xCoordinates) {
 			const id = (Number(yCoordinate) *  7) + xCoordinate + 1;
 			const screen = screensContainer.querySelector('#screen' + id);
@@ -138,25 +137,23 @@ function clearScreens(container) {
 		screen.classList.remove('flip', 'screen-highlighted');
 	}
 }
-function changeLandingOpacity() {
+function toggleLandingOpacity() {
 	landingPage.classList.toggle('half-opacity')
 }
-function changeLandingLayout() {
-	landingReminder.style.display = 'block';
-	screensContainer.style.display = 'none';
-	totalSecondsContainer.style.display = 'grid';
-	landingTimer.style.display = 'grid';
-	landingText.style.display = 'none';
-}
-function selectTimerForLanding() {
-	// landingPage.appendChild(currentChosenTimer);
+function toggleLandingLayout() {
+	landingPage.classList.toggle('new-landing-grid');
+	landingReminder.classList.toggle('display-block-element');
+	totalSecondsContainer.classList.toggle('display-grid-element');
+	landingTimer.classList.toggle('display-grid-element');
+	screensContainer.classList.toggle('hide-element');
+	landingText.classList.toggle('hide-element');
 }
 
 // pull up menu related
 let data = [];
 let backUp = []; // counters only
 
-const digitsLength = [24, 60, 60];
+const digitsLength = [23, 59, 59];
 
 let timerId = -1;
 let updating = false;
@@ -166,62 +163,132 @@ let currentEditedTimer = null;
 const pullUpMenu = document.getElementById('pull-up-menu');
 const pullUpMenuBtn = document.getElementById('pull-up-menu-btn');
 const menuItemsContainer = document.querySelector('.menu-items-container');
-const menuItems = document.querySelector('.menu-items')
+const menuItems = document.querySelector('.menu-items');
 const addTimerButton = document.querySelector('#add-timer');
 
 pullUpMenuBtn.addEventListener('click', () => {
-	changeLandingOpacity();
+	toggleLandingOpacity();
 	pullUpMenu.classList.toggle('move-menu');
 	pullUpMenuBtn.classList.toggle('move-button');
 });
 addTimerButton.addEventListener('click', () => {
-	const prompt = generatePrompt();
-	currentPrompt = prompt;
-	insertPrompt(prompt);
-})
+	if (!promptExists()) {
+		const prompt = generatePrompt();
+		const titleInput = prompt.querySelector('#title');
+		currentPrompt = prompt;
+		insertPrompt(prompt);
+		titleInput.focus();
+		scrollToBottom();
+	} else {
+		showError('confirm OR reject the current prompt first!');
+	}
+});
 // Elements generators
-function generateTimer(id, days, hours, minutes, seconds, paused) {
+// function generateLandingTimer() {
+	// let outerDiv = document.createElement('div');
+	// outerDiv.classList.add('timer', 'landing-timer', 'chosen-timer');
+	// outerDiv.id = 'timer0';
+
+	// // Create and append the days time block
+	// let daysBlock = document.createElement('div');
+	// daysBlock.classList.add('time-block', 'days-block');
+	// let daysTitle = document.createElement('h2');
+	// daysTitle.classList.add('timer-title');
+	// daysTitle.textContent = 'days';
+	// let daysDigit = document.createElement('span');
+	// daysDigit.classList.add('timer-digit', 'days-digit');
+	// daysDigit.textContent = '0';
+	// daysBlock.appendChild(daysTitle);
+	// daysBlock.appendChild(daysDigit);
+	// outerDiv.appendChild(daysBlock);
+
+	// // Create and append the hours time block
+	// let hoursBlock = document.createElement('div');
+	// hoursBlock.classList.add('time-block');
+	// let hoursTitle = document.createElement('h2');
+	// hoursTitle.classList.add('timer-title');
+	// hoursTitle.textContent = 'hr';
+	// let hoursDigit = document.createElement('span');
+	// hoursDigit.classList.add('timer-digit', 'hours-digit');
+	// hoursDigit.textContent = '0';
+	// hoursBlock.appendChild(hoursTitle);
+	// hoursBlock.appendChild(hoursDigit);
+	// outerDiv.appendChild(hoursBlock);
+
+	// // Create and append the minutes time block
+	// let minutesBlock = document.createElement('div');
+	// minutesBlock.classList.add('time-block');
+	// let minutesTitle = document.createElement('h2');
+	// minutesTitle.classList.add('timer-title');
+	// minutesTitle.textContent = 'min';
+	// let minutesDigit = document.createElement('span');
+	// minutesDigit.classList.add('timer-digit', 'minutes-digit');
+	// minutesDigit.textContent = '0';
+	// minutesBlock.appendChild(minutesTitle);
+	// minutesBlock.appendChild(minutesDigit);
+	// outerDiv.appendChild(minutesBlock);
+
+	// return outerDiv;
+// }
+function generateTimer(id, title, days, hours, minutes, seconds, paused) {
     // Create timer element
     const timer = document.createElement('div');
     timer.classList.add('timer');
+    // timer.classList.add('finished-timer');
+	
     timer.setAttribute('id', `timer${id}`);
 	// new code
 	timer.setAttribute('onclick', 'checkClick(event, this)');
 
-    // Create days block
+    // Create title/days block
     const daysBlock = document.createElement('div');
     daysBlock.classList.add('time-block', 'days-block');
 
-    const daysTitle = document.createElement('h2');
-    daysTitle.classList.add('timer-title');
-    daysTitle.textContent = 'days';
+	const carouselContainer = document.createElement('div');
+	carouselContainer.classList.add('carousel-container', 'timer-title');
+
+	const titleContainer = document.createElement('div');
+	titleContainer.classList.add('title-container');
+	
+	const headerTitle = document.createElement('h2');
+	headerTitle.classList.add('title');
+	headerTitle.textContent = '(days) ' + title;
+
+	const headerTitleClone = document.createElement('h2');
+	headerTitleClone.classList.add('title');
+	headerTitleClone.textContent = '(days) ' + title;
+
+	titleContainer.appendChild(headerTitle);
+	titleContainer.appendChild(headerTitleClone);
+
+	carouselContainer.appendChild(titleContainer);
 
     const daysDigit = document.createElement('span');
     daysDigit.classList.add('timer-digit', 'days-digit');
     daysDigit.textContent = days;
 
-    daysBlock.appendChild(daysTitle);
+    daysBlock.appendChild(carouselContainer);
     daysBlock.appendChild(daysDigit);
-
+	
     // Create hours block
     const hoursBlock = document.createElement('div');
     hoursBlock.classList.add('time-block');
-
+	
     const hoursTitle = document.createElement('h2');
     hoursTitle.classList.add('timer-title');
     hoursTitle.textContent = 'hr';
-
+	
     const hoursDigit = document.createElement('span');
     hoursDigit.classList.add('timer-digit', 'hours-digit');
     hoursDigit.textContent = hours;
-
+	
     hoursBlock.appendChild(hoursTitle);
     hoursBlock.appendChild(hoursDigit);
-
+	
     // Create minutes block
     const minutesBlock = document.createElement('div');
     minutesBlock.classList.add('time-block');
-
+	
     const minutesTitle = document.createElement('h2');
     minutesTitle.classList.add('timer-title');
     minutesTitle.textContent = 'min';
@@ -229,7 +296,7 @@ function generateTimer(id, days, hours, minutes, seconds, paused) {
     const minutesDigit = document.createElement('span');
     minutesDigit.classList.add('timer-digit', 'minutes-digit');
     minutesDigit.textContent = minutes;
-
+	
     minutesBlock.appendChild(minutesTitle);
     minutesBlock.appendChild(minutesDigit);
 
@@ -240,14 +307,14 @@ function generateTimer(id, days, hours, minutes, seconds, paused) {
     const secondsTitle = document.createElement('h2');
     secondsTitle.classList.add('timer-title');
     secondsTitle.textContent = 'sec';
-
+	
     const secondsDigit = document.createElement('span');
     secondsDigit.classList.add('timer-digit', 'seconds-digit');
     secondsDigit.textContent = seconds;
 
     secondsBlock.appendChild(secondsTitle);
     secondsBlock.appendChild(secondsDigit);
-
+	
     //create buttons block
     const buttons = document.createElement('div');
     buttons.classList.add('timer-buttons');
@@ -261,6 +328,8 @@ function generateTimer(id, days, hours, minutes, seconds, paused) {
 	// set event attributes
 	restartButton.setAttribute('onclick', "restartTimer(this.closest('div.timer'))");
 	if (paused) {
+		console.log('adding finished');
+		timer.classList.add('finished-timer');
 		pauseContinueButton.setAttribute('onclick', "continueTimer(this.closest('div.timer'))");
 	} else {
 		pauseContinueButton.setAttribute('onclick', "pauseTimer(this.closest('div.timer'))");
@@ -316,53 +385,8 @@ function generateTimer(id, days, hours, minutes, seconds, paused) {
 
     return timer;
 }
-// function generateLandingTimer() {
-	// let outerDiv = document.createElement('div');
-	// outerDiv.classList.add('timer', 'landing-timer', 'chosen-timer');
-	// outerDiv.id = 'timer0';
-
-	// // Create and append the days time block
-	// let daysBlock = document.createElement('div');
-	// daysBlock.classList.add('time-block', 'days-block');
-	// let daysTitle = document.createElement('h2');
-	// daysTitle.classList.add('timer-title');
-	// daysTitle.textContent = 'days';
-	// let daysDigit = document.createElement('span');
-	// daysDigit.classList.add('timer-digit', 'days-digit');
-	// daysDigit.textContent = '0';
-	// daysBlock.appendChild(daysTitle);
-	// daysBlock.appendChild(daysDigit);
-	// outerDiv.appendChild(daysBlock);
-
-	// // Create and append the hours time block
-	// let hoursBlock = document.createElement('div');
-	// hoursBlock.classList.add('time-block');
-	// let hoursTitle = document.createElement('h2');
-	// hoursTitle.classList.add('timer-title');
-	// hoursTitle.textContent = 'hr';
-	// let hoursDigit = document.createElement('span');
-	// hoursDigit.classList.add('timer-digit', 'hours-digit');
-	// hoursDigit.textContent = '0';
-	// hoursBlock.appendChild(hoursTitle);
-	// hoursBlock.appendChild(hoursDigit);
-	// outerDiv.appendChild(hoursBlock);
-
-	// // Create and append the minutes time block
-	// let minutesBlock = document.createElement('div');
-	// minutesBlock.classList.add('time-block');
-	// let minutesTitle = document.createElement('h2');
-	// minutesTitle.classList.add('timer-title');
-	// minutesTitle.textContent = 'min';
-	// let minutesDigit = document.createElement('span');
-	// minutesDigit.classList.add('timer-digit', 'minutes-digit');
-	// minutesDigit.textContent = '0';
-	// minutesBlock.appendChild(minutesTitle);
-	// minutesBlock.appendChild(minutesDigit);
-	// outerDiv.appendChild(minutesBlock);
-
-	// return outerDiv;
-// }
-function generatePrompt(days, hours, minutes, seconds) {
+function generatePrompt(title, days, hours, minutes, seconds) {
+	title = title === undefined ? '' : title;
 	days = days === undefined ? '' : days;
 	hours = hours === undefined ? '' : hours;
 	minutes = minutes === undefined ? '' : minutes;
@@ -377,6 +401,30 @@ function generatePrompt(days, hours, minutes, seconds) {
 	inputsDiv.classList.add("inputs");
 	promptDiv.appendChild(inputsDiv);
 
+
+	// <div class="input-container title-input">
+		// <h2 class="input-title">title</h2>
+		// <input placeholder=title id=title type="text">
+	// </div>
+	// Create title input container with class "input-container title-input" and append it to the inputs container
+	let titleInputContainer = document.createElement("div");
+	titleInputContainer.classList.add("input-container", "title-input");
+	inputsDiv.appendChild(titleInputContainer);
+
+	// Create title input title with class "input-title" and text content "title" and append it to the title input container
+	let titleInputTitle = document.createElement("h2");
+	titleInputTitle.classList.add("input-title", "title-title");
+	titleInputTitle.textContent = "title";
+	titleInputContainer.appendChild(titleInputTitle);
+
+	// Create title input element with id "title", type "number", and append it to the title input container
+	let titleInput = document.createElement("input");
+	titleInput.setAttribute("placeholder", "title");
+	titleInput.setAttribute("id", "title");
+	titleInput.setAttribute("type", "text");
+	titleInput.value = title;
+	titleInputContainer.appendChild(titleInput);
+
 	// Create days input container with class "input-container days-input" and append it to the inputs container
 	let daysInputContainer = document.createElement("div");
 	daysInputContainer.classList.add("input-container", "days-input");
@@ -384,7 +432,7 @@ function generatePrompt(days, hours, minutes, seconds) {
 
 	// Create days input title with class "input-title" and text content "days" and append it to the days input container
 	let daysInputTitle = document.createElement("h2");
-	daysInputTitle.classList.add("input-title");
+	daysInputTitle.classList.add("input-title", "days-title");
 	daysInputTitle.textContent = "days";
 	daysInputContainer.appendChild(daysInputTitle);
 
@@ -487,6 +535,12 @@ function generatePrompt(days, hours, minutes, seconds) {
 
 	return promptDiv;
 }
+function generateTitleTooltip(title) {
+	const container = document.createElement('div');
+	container.classList.add('title-tooltip');
+	container.textContent = title;
+	return container;
+}
 // Timer
 function getTimerIndex(timer) {
 	return timer.id.match(/\d+/)[0];
@@ -499,92 +553,157 @@ function updateTimer(timer, days, hours, minutes, seconds) {
 }
 function checkClick(event, timer) {
 	if (event.target.tagName !== 'BUTTON' && event.target.parentElement.tagName !== 'BUTTON') {
+		if (currentLandingTimer === null) {
+			toggleLandingLayout();
+		}
 		selectChosentimer(timer); // passed as `this`
 	}
 }
 function selectChosentimer(timer) {
+	const timerIndex = getTimerIndex(timer);
+	data[timerIndex].chosen = true;
+	clearScreens(onesSecondsContainer);
+	clearScreens(tensSecondsContainer);
 	const previouslyChosenTimer = menuItems.querySelector('.chosen-timer');
 	if (previouslyChosenTimer) {
+		const timerIndex = getTimerIndex(previouslyChosenTimer);
+		data[timerIndex].chosen = false;
 		previouslyChosenTimer.classList.remove('chosen-timer');
 	}
 	timer.classList.add('chosen-timer');
-	currentChosenTimer = timer.cloneNode(true);
-	selectTimerForLanding();
+	currentLandingTimer = timer.cloneNode(true);
+	updateLandingCounters();
 }
 // Prompt
+function scrollToBottom() {
+	menuItemsContainer.scrollTop = menuItemsContainer.scrollHeight;
+}
 function validateInput(inputEle, limit) {
 	value = inputEle.value;
     if (value > limit) {
-    	errorInputNotValid(inputEle.id, limit);
+    	showError('The maximum value for ' + inputEle.id + ' is ' + limit + '!');
     	inputEle.value = '';	
-    }
-}
-function errorInputNotValid(id, limit) {
-	alert(`The Max # of ${id} is ${limit}`)
+    } else if (value < 0) {
+		showError("you can't enter a value less than zero!")
+    	inputEle.value = '';	
+	}
 }
 function getInputsValues(prompt) {
+	const titleInputEle = prompt.querySelector('#title');
 	const daysInputEle = prompt.querySelector('#days');
 	const hoursInputEle = prompt.querySelector('#hours');
 	const minutesInputEle = prompt.querySelector('#minutes');
 	const secondsInputEle = prompt.querySelector('#seconds');
 
+	const titleValue = titleInputEle.value;
 	const daysValue = isNaN(parseInt(daysInputEle.value)) ? 0 : parseInt(daysInputEle.value);
 	const hoursValue = isNaN(parseInt(hoursInputEle.value)) ? 0 : parseInt(hoursInputEle.value);
 	const minutesValue = isNaN(parseInt(minutesInputEle.value)) ? 0 : parseInt(minutesInputEle.value);
 	const secondsValue = isNaN(parseInt(secondsInputEle.value)) ? 0 : parseInt(secondsInputEle.value);
-
-	return [daysValue, hoursValue, minutesValue, secondsValue];
+	let empty = false;
+	if (daysValue === 0 && hoursValue === 0 && minutesValue === 0 && secondsValue === 0) {
+		empty = true;
+	}
+	return [titleValue, daysValue, hoursValue, minutesValue, secondsValue, empty];
 }
 function confirmPrompt(button) {
-	const prompt = button.closest('div.prompt');
-	const [days, hours, minutes, seconds] = getInputsValues(prompt);
+	// const prompt = button.closest('div.prompt');
+	const [title, days, hours, minutes, seconds, empty] = getInputsValues(currentPrompt);
 	let currentId = null;
+	let chosen = null;
 	if (updating) {
-		currentId = getTimerIndex(currentEditedTimer);
-		deleteElement(currentEditedTimer);
+		// change the total seconds in landing when the timer is edited to prevent tens overflow
+		const timerIndex = getTimerIndex(currentEditedTimer);
+		currentId = timerIndex;
+		if (data[timerIndex].chosen === true) {
+			chosen = true;
+			clearScreens(onesSecondsContainer);
+			clearScreens(tensSecondsContainer);
+		}
+		deleteElement(menuItems, currentEditedTimer);
 	} else {
 		timerId++;
 		currentId = timerId;
 	}
-	const timer = generateTimer(currentId, days, hours, minutes, seconds, false); // paused
-	addTimerToData(currentId, days, hours, minutes, seconds);
+	const timer = generateTimer(currentId, title, days, hours, minutes, seconds, empty); // empty or paused
+	addTimerToData(currentId, title, days, hours, minutes, seconds, empty);
 	addTimerToBackUp(currentId, days, hours, minutes, seconds);
 	insertTimer(timer, currentPrompt);
-	deleteElement(prompt);
+	deleteElement(menuItems, currentPrompt);
+	if (chosen !== null) {
+		selectChosentimer(timer);
+	}
 	if (firstChange) {
-		changeLandingLayout();
+		toggleLandingLayout();
 		selectChosentimer(timer);
 		firstChange = false;
 	}
 	updating = false;
+	let titleContainer = timer.querySelector('.title-container');
+	let firstTitle = timer.querySelector('.title-container .title');
+	let titles = timer.querySelectorAll('.title-container .title');
+	let appropriateDuration = 7;
+	if (firstTitle.offsetWidth > titleContainer.offsetWidth) {
+		appropriateDuration = firstTitle.offsetWidth / titleContainer.offsetWidth;
+	} 
+	for (let i = 0; i < titles.length; i++) {
+		titles[i].style.animation = `carousel ${appropriateDuration}s infinite linear`;
+	}
+	const timerTitle = timer.querySelector('.carousel-container.timer-title')
+	timerTitle.addEventListener('mouseenter', function() {
+		const tooltip = generateTitleTooltip(firstTitle.innerText);
+		timerTitle.appendChild(tooltip);
+	});
+	timerTitle.addEventListener('mouseleave', function() {
+		const tooltip = timerTitle.querySelector('.title-tooltip');
+		deleteElement(timerTitle, tooltip);
+	});
+	scrollToBottom();
+	// to check if something is being edited or created
+	currentPrompt = null;
 }
 function rejectPrompt(button) {
-	const prompt = button.closest('div.prompt');
+	// const prompt = button.closest('div.prompt');
 	if (updating) {
 		currentEditedTimer.style.display = 'grid'
 		const currentTimerIndex = getTimerIndex(currentEditedTimer);
 		data[currentTimerIndex].paused = false;
 	}
-	deleteElement(prompt);
+	deleteElement(menuItems, currentPrompt);
 	updating = false;
+	currentPrompt = null;
 }
 // Data and BackUP
-function addTimerToData(id, days, hours, minutes, seconds) {
+function addTimerToData(id, title, days, hours, minutes, seconds, empty) {
 	data[id] = {};
 	data[id].id = id;
+	data[id].title = title;
 	data[id].counters = [days, hours, minutes, seconds];
 	data[id].finished = false;
-	data[id].paused = false;
+	if (empty) {
+		data[id].finished = true;
+		data[id].paused = true;
+	} else {
+		data[id].finished = false;
+		data[id].paused = false;
+	}
+	data[id].chosen = false;
+}
+function addTimerToBackUp(id, days, hours, minutes, seconds) {
+	backUp[id] = {};
+	backUp[id].counters = [days, hours, minutes, seconds];
+}
+function removeTimerFromData(timerIndex) {
+	data.splice(timerIndex, 1);
+}
+function removeTimerFromBackUp(timerIndex) {
+	backUp.splice(timerIndex, 1);
 }
 function updateTimersData(timerIndex, days, hours, minutes, seconds) {
 	data[timerIndex].counters[0] = days;
 	data[timerIndex].counters[1] = hours;
 	data[timerIndex].counters[2] = minutes;
 	data[timerIndex].counters[3] = seconds;
-}
-function addTimerToBackUp(id, days, hours, minutes, seconds) {
-	backUp[id] = {};
-	backUp[id].counters = [days, hours, minutes, seconds];
 }
 // adding/removing to/from DOM
 function insertTimer(timer, prompt=null) {
@@ -601,8 +720,8 @@ function insertPrompt(prompt, timer=null) {
 		menuItems.insertBefore(prompt, addTimerButton);
 	}
 }
-function deleteElement(element) {
-	menuItems.removeChild(element);
+function deleteElement(parent, element) {
+	parent.removeChild(element);
 }
 // Timer's Four Buttons
 function restartTimer(timer) {
@@ -611,6 +730,12 @@ function restartTimer(timer) {
 	const [days, hours, minutes, seconds] = backUp[timerIndex].counters;
 	updateTimersData(timerIndex, days, hours, minutes, seconds);
 	updateTimer(timer, days, hours, minutes, seconds);
+	// to display the new changes on the landing page
+	if (data[timerIndex].chosen === true) {
+		clearScreens(tensSecondsContainer);
+		clearScreens(onesSecondsContainer);
+		updateLandingCounters();
+	}
 }
 function pauseTimer(timer) {
 	const timerIndex = getTimerIndex(timer);
@@ -620,38 +745,75 @@ function pauseTimer(timer) {
 }
 function continueTimer(timer) {
 	const timerIndex = getTimerIndex(timer);
-	data[timerIndex].paused = false;
-	timer.querySelector('#pause-continue-button span').innerText = 'pause';
-	timer.querySelector('#pause-continue-button').setAttribute('onclick', "pauseTimer(this.closest('div.timer'))");
+	if (data[timerIndex].finished !== true) {
+		data[timerIndex].paused = false;
+		timer.querySelector('#pause-continue-button span').innerText = 'pause';
+		timer.querySelector('#pause-continue-button').setAttribute('onclick', "pauseTimer(this.closest('div.timer'))");
+	} else {
+		showError('This timer is finished! Edit or Remove it!')
+	}
 }
 function editTimer(timer) {
-	updating = true;
-	currentEditedTimer = timer;
-	const timerIndex = getTimerIndex(timer);
-	data[timerIndex].paused = true;
-	const prompt = generatePrompt(data[timerIndex].counters[0], data[timerIndex].counters[1], data[timerIndex].counters[2], data[timerIndex].counters[3]);
-	currentPrompt = prompt;
-	insertPrompt(prompt, timer);
-	timer.style.display = 'none';
+	if (!promptExists()) {
+		updating = true;
+		currentEditedTimer = timer;
+		const timerIndex = getTimerIndex(timer);
+		data[timerIndex].paused = true;
+		const prompt = generatePrompt(data[timerIndex].title, data[timerIndex].counters[0], data[timerIndex].counters[1], data[timerIndex].counters[2], data[timerIndex].counters[3]);
+		currentPrompt = prompt;
+		insertPrompt(prompt, timer);
+		timer.style.display = 'none';
+	} else {
+		showError('confirm OR reject the current prompt first!');
+	}
 }
 function deleteTimer(timer) {
-	deleteElement(timer);
+	deleteElement(menuItems, timer);
 	const timerIndex = getTimerIndex(timer);
-	if (timerIndex === '0' && timerId > 0) {
-		selectChosentimer(document.querySelector('#timer1'));
-	}
-	data.splice(timerIndex, 1);
-	backUp.splice(timerIndex, 1);
-	timerId--;
+	removeTimerFromData(timerIndex);
+	removeTimerFromBackUp(timerIndex);
+	// change the id's in the data
 	for (let i = timerIndex; i < data.length; i++) {
 		data[i].id -= 1;
 	}
-	const allTimers = document.querySelectorAll('div.timer');
-	for (let i = timerIndex; i < allTimers.length; i++) {
-		const timer = allTimers[i];
-		const timerId = getTimerIndex(timer);
-		allTimers[i].id = `timer${timerId - 1}`;
+	// change the id's of the timers on screen
+	const allTimers = menuItems.querySelectorAll('div.timer');
+	for (let i = timerIndex; i < data.length; i++) {
+		allTimers[i].setAttribute('id', `timer${i}`);
 	}
+	timerId--;
+	// select chosen timer if possible
+	// I don't know why (timer === currenLandingTimer) = 'false'
+	console.log('the timer id is:', timer.id, 'and the landing timer is:', currentLandingTimer.id);
+	console.log('timerid > currentlandingtimer', timer.id > currentLandingTimer.id);
+	if (timerId === -1) { // no timers left
+		firstChange = true;
+		currentLandingTimer = null;
+		toggleLandingLayout();
+	} else if (timer.id === currentLandingTimer.id && timerId === 0) { // delete chosen and one timer left
+		selectChosentimer(document.querySelector('#timer0'))
+	} else if (timer.id === currentLandingTimer.id && timerId > 0) { // delete chosen and there are multiple
+		currentLandingTimer = null;
+		toggleLandingLayout();
+	} else if (timer.id < currentLandingTimer.id) { // delete the unchosen one and there is one timer left (before)
+		currentLandingTimer = menuItems.querySelector(`#timer${getTimerIndex(currentLandingTimer) - 1}`)
+	} else { // delete the unchosen one and there is one timer left (after)
+	}
+}
+// errors
+function promptExists() {
+	if (currentPrompt !== null) {
+		return true;
+	}
+	return false;
+}
+const errorContainer = document.querySelector('.error-message');
+function showError(message) {
+	errorContainer.classList.remove('error-animation');
+	errorContainer.innerHTML = "<span style='color: var(--brown); font-weight: 600;'>Error: </span>"+ message;
+	setTimeout(() => {
+		errorContainer.classList.add('error-animation');
+	}, 10)
 }
 // Updating loop functions
 function updateTimers() {
@@ -671,6 +833,29 @@ function updateTimers() {
 		}
 	}
 }
+function updateLandingCounters() {
+	const landingTimerId = getTimerIndex(currentLandingTimer);
+	const days = data[landingTimerId].counters[0];
+	const hours = data[landingTimerId].counters[1];
+	const minutes = data[landingTimerId].counters[2];
+	const seconds = data[landingTimerId].counters[3];
+	landingTimer.querySelector('.days-digit').innerText = days;
+	landingTimer.querySelector('.hours-digit').innerText = hours;
+	landingTimer.querySelector('.minutes-digit').innerText = minutes;
+	let secondsArr = `${seconds}`.split("");
+	if (secondsArr.length < 2) {
+		secondsArr.unshift('0');
+	}
+	updateTotalSecondsContainer(secondsArr);
+}
+function updateTotalSecondsContainer(seconds) {
+	getScreen(digitsBluePrints[seconds[0]],tensSecondsContainer);
+	getScreen(digitsBluePrints[seconds[1]],onesSecondsContainer);
+	clearScreens(onesSecondsContainer);
+	if (seconds[1] === '9') {
+		clearScreens(tensSecondsContainer);
+	}
+}
 function borrowTime(timer, currentDigitIndex) {
 	const biggerDigitIndex = currentDigitIndex - 1;
 	if (biggerDigitIndex === 0 && timer.counters[0] === 0) {
@@ -679,7 +864,7 @@ function borrowTime(timer, currentDigitIndex) {
 	else if (timer.counters[biggerDigitIndex] > 0) {
 		timer.counters[biggerDigitIndex]--;
 		for (let i = biggerDigitIndex + 1; i <= digitsLength.length; i++) {
-			timer.counters[i] = digitsLength[i - 1] - 1;
+			timer.counters[i] = digitsLength[i - 1];
 		}
 	} else {
 		borrowTime(timer, biggerDigitIndex);
@@ -704,32 +889,22 @@ function redisplayAllCounters(timerId) {
 }
 function timerFinished(timer) {
 	timer.finished = true;
+	const timerEle = getTimerFromIndex(timer.id);
+	timerEle.classList.add('finished-timer');
+	pauseTimer(timerEle)
+	// timer.paused = true;
+}
+function getTimerFromIndex(index) {
+	return menuItems.querySelector(`#timer${data[index].id}`)
 }
 // Updating loop
 setInterval(function() {
 	updateTimers();
-	if (currentChosenTimer !== null) {
-		landingTimerId = getTimerIndex(currentChosenTimer);
-		const days = data[landingTimerId].counters[0];
-		const hours = data[landingTimerId].counters[1];
-		const minutes = data[landingTimerId].counters[2];
-		const seconds = data[landingTimerId].counters[3];
-		landingTimer.querySelector('.days-digit').innerText = days;
-		landingTimer.querySelector('.hours-digit').innerText = hours;
-		landingTimer.querySelector('.minutes-digit').innerText = minutes;
-		let secondsSplitted = `${seconds}`.split("");
-		if (secondsSplitted.length < 2) {
-			secondsSplitted = '0' + secondsSplitted;
-		}
-		getScreen(bluePrints[secondsSplitted[1]],onesSecondsContainer);
-		getScreen(bluePrints[secondsSplitted[0]],tensSecondsContainer);
-		clearScreens(onesSecondsContainer);
-		if (secondsSplitted[1] === '9') {
-			clearScreens(tensSecondsContainer);
-		}
+	// finished timers are paused anyways
+	if (currentLandingTimer !== null && data[getTimerIndex(currentLandingTimer)].paused !== true) {
+		updateLandingCounters();
 	}
 }, 1000);
 // Run First
-document.onload = () => {
-	getScreen(userPattern, screensContainer);
-}
+getScreen(userPattern, screensContainer);
+

@@ -13,6 +13,7 @@
 	<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
 </head>
 <body>
+	<div class="error-message"></div>
 	<section class="landing">
 		<div class="styles">
 			<div class="h-line">
@@ -24,9 +25,6 @@
 				</button>
 			</div>
 		</div>
-
-
-
 		<div id='screens-container' class="screens-container">
 			<span class="screen screen1" id="screen1"></span>
 			<span class="screen screen2" id="screen2"></span>
@@ -231,11 +229,11 @@
 			<span class="timer-digit days-digit">0</span>
 			</div>
 			<div class="time-block">
-			<h2 class="timer-title">hr</h2>
+			<h2 class="timer-title">Hr.</h2>
 			<span class="timer-digit hours-digit">0</span>
 			</div>
 			<div class="time-block">
-			<h2 class="timer-title">min</h2>
+			<h2 class="timer-title">Min.</h2>
 			<span class="timer-digit minutes-digit">0</span>
 			</div>
 		</div>
@@ -246,47 +244,48 @@
 	</section>
 	<section id='pull-up-menu' class="pull-up-menu">
 		<button id='pull-up-menu-btn' class='arrow'>
-			<span class="center-text-icon material-symbols-outlined">
+			<span class="center-element material-symbols-outlined">
 			arrow_downward
 			</span>
 		</button>
 		<div class="menu-items-container">			
 			<div class="menu-items">
-
-
-
-<!-- <div class="prompt">
-	<div class="inputs">
-		<div class="input-container days-input">
-			<h2 class="input-title">days</h2>
-			<input placeholder=0 id=days type="number">
-		</div>
-		<div class="input-container">
-			<h2 class="input-title">hr</h2>
-			<input placeholder=0 id=hours type="number" max=24>
-		</div>
-		<div class="input-container">
-			<h2 class="input-title">min</h2>
-			<input placeholder=0 id=minutes type="number" max=60>
-		</div>
-		<div class="input-container">
-			<h2 class="input-title">sec</h2>
-			<input placeholder=0 id=seconds type="number" max=60>
-		</div>					
-	</div>
-	<div class="buttons">
-		<button onclick="confirmPrompt()">
-			<span class="material-symbols-outlined">
-			done
-			</span>
-		</button>
-		<button onclick="rejectPrompt()">
-			<span class="material-symbols-outlined">
-			close
-			</span>
-		</button>
-	</div>
-</div> -->
+				<!-- <div class="prompt">
+					<div class="inputs">
+						<div class="input-container title-input">
+							<h2 class="input-title">title</h2>
+							<input placeholder=title id=title type="text">
+						</div>
+						<div class="input-container days-input">
+							<h2 class="input-title">days</h2>
+							<input placeholder=0 id=days type="number">
+						</div>
+						<div class="input-container">
+							<h2 class="input-title">hr</h2>
+							<input placeholder=0 id=hours type="number" max=24>
+						</div>
+						<div class="input-container">
+							<h2 class="input-title">min</h2>
+							<input placeholder=0 id=minutes type="number" max=60>
+						</div>
+						<div class="input-container">
+							<h2 class="input-title">sec</h2>
+							<input placeholder=0 id=seconds type="number" max=60>
+						</div>					
+					</div>
+					<div class="buttons">
+						<button onclick="confirmPrompt()">
+							<span class="material-symbols-outlined">
+							done
+							</span>
+						</button>
+						<button onclick="rejectPrompt()">
+							<span class="material-symbols-outlined">
+							close
+							</span>
+						</button>
+					</div>
+				</div> -->
 				<button id="add-timer">
 					<span class="material-symbols-outlined">add</span>
 				</button>			
