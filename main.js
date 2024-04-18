@@ -140,11 +140,9 @@ function clearScreens(container) {
 function toggleLandingOpacity() {
 	landingPage.classList.toggle('half-opacity')
 }
+const wholeTimer = document.getElementById('whole-timer');
 function toggleLandingLayout() {
-	landingPage.classList.toggle('new-landing-grid');
-	landingReminder.classList.toggle('display-block-element');
-	totalSecondsContainer.classList.toggle('display-grid-element');
-	landingTimer.classList.toggle('display-grid-element');
+	wholeTimer.classList.toggle('display-block-element');
 	screensContainer.classList.toggle('hide-element');
 	landingText.classList.toggle('hide-element');
 }
@@ -183,53 +181,21 @@ addTimerButton.addEventListener('click', () => {
 		showError('confirm OR reject the current prompt first!');
 	}
 });
-// Elements generators
-// function generateLandingTimer() {
-	// let outerDiv = document.createElement('div');
-	// outerDiv.classList.add('timer', 'landing-timer', 'chosen-timer');
-	// outerDiv.id = 'timer0';
-
-	// // Create and append the days time block
-	// let daysBlock = document.createElement('div');
-	// daysBlock.classList.add('time-block', 'days-block');
-	// let daysTitle = document.createElement('h2');
-	// daysTitle.classList.add('timer-title');
-	// daysTitle.textContent = 'days';
-	// let daysDigit = document.createElement('span');
-	// daysDigit.classList.add('timer-digit', 'days-digit');
-	// daysDigit.textContent = '0';
-	// daysBlock.appendChild(daysTitle);
-	// daysBlock.appendChild(daysDigit);
-	// outerDiv.appendChild(daysBlock);
-
-	// // Create and append the hours time block
-	// let hoursBlock = document.createElement('div');
-	// hoursBlock.classList.add('time-block');
-	// let hoursTitle = document.createElement('h2');
-	// hoursTitle.classList.add('timer-title');
-	// hoursTitle.textContent = 'hr';
-	// let hoursDigit = document.createElement('span');
-	// hoursDigit.classList.add('timer-digit', 'hours-digit');
-	// hoursDigit.textContent = '0';
-	// hoursBlock.appendChild(hoursTitle);
-	// hoursBlock.appendChild(hoursDigit);
-	// outerDiv.appendChild(hoursBlock);
-
-	// // Create and append the minutes time block
-	// let minutesBlock = document.createElement('div');
-	// minutesBlock.classList.add('time-block');
-	// let minutesTitle = document.createElement('h2');
-	// minutesTitle.classList.add('timer-title');
-	// minutesTitle.textContent = 'min';
-	// let minutesDigit = document.createElement('span');
-	// minutesDigit.classList.add('timer-digit', 'minutes-digit');
-	// minutesDigit.textContent = '0';
-	// minutesBlock.appendChild(minutesTitle);
-	// minutesBlock.appendChild(minutesDigit);
-	// outerDiv.appendChild(minutesBlock);
-
-	// return outerDiv;
-// }
+window.addEventListener('resize', function() {
+    checkElementWidth('menu-items', 500);
+});
+function checkElementWidth(elementId, minWidth) {
+    let element = document.getElementById(elementId);
+	if (element.clientWidth > minWidth) {
+		if (!element.classList.contains('splitted-menu-items')) {
+			element.classList.add('splitted-menu-items');
+		}
+	} else {
+		if (element.classList.contains('splitted-menu-items')) {
+			element.classList.remove('splitted-menu-items');
+		}
+	}
+}
 function generateTimer(id, title, days, hours, minutes, seconds, paused) {
     // Create timer element
     const timer = document.createElement('div');
@@ -906,5 +872,6 @@ setInterval(function() {
 	}
 }, 1000);
 // Run First
+checkElementWidth('menu-items', 500);
 getScreen(userPattern, screensContainer);
 

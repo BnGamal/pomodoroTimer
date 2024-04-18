@@ -27,9 +27,20 @@
 - [x] the `overflow:hidden ` for that time-block was for the outter curved border
 - [x] empty timers are not paused by default??
 - [x] continue can be pressed when the timer is finished => show error
+- [ ] make a better layout
+    - [x] change the layout (min-width:700px)
+    - [x] landing timer and total second should be in the same div with a height of 100vh (good for adding an option that focuses on the landing timer)
+    - [x] make the pull up menu have two columns of timers on big screens
+    - [ ] add options button
+        - [ ] display all timers
+- [ ] clicking on the same timer redisplays the landing page total seconds container
+- [ ] the error message is stretched (change body to main, and maybe the timers menu to a-side)
+- [ ] on edit the `scrolldown` function gets called after confirming the prompt
+- [ ] the speed of the title doesn't work correctly
+- [ ] the error message sticks to the top of the element not the top of the screen (if hte screen is scrolled it will not show up to the user)
 
 # improvements
-- [ ] change the layout (ex. remove the pause button) when the timer is done
+- [ ] change the layout of the timer (ex. remove the pause button) when the timer is done
 - [ ] save to local storage
 - [ ] make a button that changes the order of the timers created (from latest => oldest or from oldest => latest)
 - choose a pattern to be greeted with everytime you login
